@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YT-DLP GUI</title>
+    <link rel="stylesheet" href="./styless.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-download"></i>
+            <h1>YT-DLP GUI</h1>
+          </div>
+          <div class="status" id="status">
+            <span class="status-indicator" id="statusIndicator"></span>
+            <span id="statusText">Verificando yt-dlp...</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- URL Input Section -->
+        <section class="url-section">
+          <div class="input-group">
+            <input
+              type="text"
+              id="urlInput"
+              placeholder="Cole aqui a URL do vídeo ou playlist..."
+              class="url-input"
+            />
+            <button id="getInfoBtn" class="btn btn-secondary">
+              <i class="fas fa-info-circle"></i>
+              Obter Info
+            </button>
+          </div>
+        </section>
+
+        <!-- Video Info Section -->
+        <section class="video-info" id="videoInfo" style="display: none">
+          <div class="info-card">
+            <div class="info-header">
+              <img
+                id="videoThumbnail"
+                src=""
+                alt="Thumbnail"
+                class="thumbnail"
+              />
+              <div class="info-details">
+                <h3 id="videoTitle">Título do Vídeo</h3>
+                <p id="videoUploader">Canal</p>
+                <div class="video-stats">
+                  <span id="videoDuration">Duração</span>
+                  <span id="videoViews">Visualizações</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Download Options -->
+        <section class="download-options">
+          <div class="options-grid">
+            <!-- Output Path -->
+            <div class="option-group">
+              <label for="outputPath">Pasta de Destino:</label>
+              <div class="path-input">
+                <input
+                  type="text"
+                  id="outputPath"
+                  placeholder="Selecione a pasta..."
+                  readonly
+                />
+                <button id="selectFolderBtn" class="btn btn-outline">
+                  <i class="fas fa-folder-open"></i>
+                  Selecionar
+                </button>
+              </div>
+            </div>
+
+            <!-- Format Selection -->
+            <div class="option-group">
+              <label for="formatSelect">Formato:</label>
+              <select id="formatSelect" class="select-input">
+                <option value="video">Vídeo (MP4)</option>
+                <option value="audio">Áudio (MP3)</option>
+              </select>
+            </div>
+
+            <!-- Quality Selection -->
+            <div class="option-group" id="qualityGroup">
+              <label for="qualitySelect">Qualidade:</label>
+              <select id="qualitySelect" class="select-input">
+                <option value="best">Melhor Qualidade</option>
+                <option value="1080">1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+              </select>
+            </div>
+
+            <!-- Download Button -->
+            <div class="option-group">
+              <button id="downloadBtn" class="btn btn-primary btn-large">
+                <i class="fas fa-download"></i>
+                Iniciar Download
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section
+          class="progress-section"
+          id="progressSection"
+          style="display: none"
+        >
+          <div class="progress-container">
+            <div class="progress-header">
+              <h3>Status do Download</h3>
+              <button id="cancelBtn" class="btn btn-danger btn-small">
+                <i class="fas fa-times"></i>
+                Cancelar
+              </button>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">
+              Preparando download...
+            </div>
+            <div class="console-output" id="consoleOutput"></div>
+          </div>
+        </section>
+
+        <!-- Recent Downloads -->
+        <section class="recent-downloads">
+          <h3>Downloads Recentes</h3>
+          <div class="downloads-list" id="downloadsList">
+            <div class="empty-state">
+              <i class="fas fa-download"></i>
+              <p>Nenhum download realizado ainda</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>Powered by yt-dlp | Interface criada com Electron</p>
+      </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

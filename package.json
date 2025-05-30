@@ -1,0 +1,47 @@
+{
+  "name": "yt-dlp-gui",
+  "version": "1.0.0",
+  "description": "Interface gráfica para yt-dlp",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "dev": "electron . --enable-logging"
+  },
+  "keywords": [
+    "youtube",
+    "download",
+    "yt-dlp",
+    "electron"
+  ],
+  "author": "zerobertoo",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "child_process": "^1.0.2"
+  },
+  "build": {
+    "appId": "com.yourname.yt-dlp-gui",
+    "productName": "YT-DLP GUI",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "node_modules/electron/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
