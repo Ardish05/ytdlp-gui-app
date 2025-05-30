@@ -1,191 +1,238 @@
 # YT-DLP GUI
 
-Uma interface gráfica moderna e intuitiva para o yt-dlp, desenvolvida com Electron. Permite baixar vídeos e áudios do YouTube e outras plataformas de forma simples e visual.
+Uma interface gráfica moderna e intuitiva para o yt-dlp, construída com Electron e Tailwind CSS.
 
-## 🚀 Características
+![YT-DLP GUI Screenshot](https://via.placeholder.com/800x500/3b82f6/ffffff?text=YT-DLP+GUI)
 
-- **Interface moderna e responsiva** - Design limpo e intuitivo
-- **Visualização de informações do vídeo** - Thumbnail, título, duração, visualizações
-- **Múltiplos formatos** - Vídeo (MP4) e Áudio (MP3)
-- **Seleção de qualidade** - De 360p até 1080p
-- **Progresso em tempo real** - Acompanhe o download com barra de progresso
-- **Histórico de downloads** - Veja seus downloads recentes
-- **Multiplataforma** - Windows, macOS e Linux
+## ✨ Características
 
-## 📋 Pré-requisitos
+- **Interface moderna e responsiva** com Tailwind CSS
+- **Análise automática de vídeos** com preview de thumbnail
+- **Múltiplos formatos de download** (vídeo e áudio)
+- **Download apenas de áudio** com vários formatos suportados
+- **Download de legendas** automáticas e manuais
+- **Monitoramento em tempo real** do progresso de download
+- **Downloads simultâneos** com gerenciamento individual
+- **Seleção de pasta de destino** personalizada
+- **Interface multiplataforma** (Windows, macOS, Linux)
 
-Antes de usar a aplicação, você precisa ter instalado:
+## 🚀 Pré-requisitos
+
+Antes de usar esta aplicação, você precisa ter instalado:
 
 ### 1. yt-dlp
 
 ```bash
-# Windows (via pip)
+# Windows (usando pip)
 pip install yt-dlp
 
-# Windows (via winget)
+# Windows (usando winget)
 winget install yt-dlp
 
-# macOS (via brew)
+# macOS (usando brew)
 brew install yt-dlp
 
-# Linux (via pip)
+# Linux (usando pip)
 pip install yt-dlp
+
+# Ou baixe diretamente do GitHub
+# https://github.com/yt-dlp/yt-dlp/releases
 ```
 
-### 2. FFmpeg (opcional, mas recomendado)
+### 2. Node.js
+
+Baixe e instale o Node.js em: https://nodejs.org/
+
+### 3. FFmpeg (recomendado para melhor compatibilidade)
 
 ```bash
-# Windows
-# Baixe de https://ffmpeg.org/download.html
+# Windows (usando winget)
+winget install FFmpeg
 
-# macOS
+# macOS (usando brew)
 brew install ffmpeg
 
 # Linux (Ubuntu/Debian)
 sudo apt install ffmpeg
 ```
 
-## 🛠️ Instalação e Desenvolvimento
+## 📦 Instalação
 
-### 1. Clone o repositório
+1. **Clone o repositório:**
 
 ```bash
-git clone https://github.com/seu-usuario/yt-dlp-gui.git
+git clone https://github.com/seuusuario/yt-dlp-gui.git
 cd yt-dlp-gui
 ```
 
-### 2. Instale as dependências
+2. **Instale as dependências:**
 
 ```bash
 npm install
 ```
 
-### 3. Execute em modo desenvolvimento
+3. **Execute a aplicação:**
 
 ```bash
 npm start
 ```
 
-### 4. Gerar executável
+## 🔧 Scripts Disponíveis
 
 ```bash
-# Para Windows
+# Executar em modo desenvolvimento
+npm run dev
+
+# Executar a aplicação
+npm start
+
+# Construir para todas as plataformas
+npm run build
+
+# Construir apenas para Windows
 npm run build-win
 
-# Para todas as plataformas
-npm run build
+# Construir apenas para macOS
+npm run build-mac
+
+# Construir apenas para Linux
+npm run build-linux
 ```
 
-O executável será gerado na pasta `dist/`.
+## 📱 Como Usar
 
-## 📖 Como Usar
+### 1. Análise de Vídeo
 
-1. **Abra a aplicação** - Execute o arquivo .exe gerado
-2. **Verifique o status** - Certifique-se de que o yt-dlp está disponível (indicator verde)
-3. **Cole a URL** - Insira a URL do vídeo que deseja baixar
-4. **Obter informações** - Clique em "Obter Info" para ver detalhes do vídeo
-5. **Configurar download**:
-   - Escolha a pasta de destino
-   - Selecione o formato (Vídeo ou Áudio)
-   - Escolha a qualidade (apenas para vídeo)
-6. **Iniciar download** - Clique em "Iniciar Download"
-7. **Acompanhar progresso** - Veja o progresso em tempo real
+- Cole a URL do vídeo no campo de entrada
+- Clique em "Analisar" ou pressione Enter
+- Aguarde as informações do vídeo aparecerem
 
-## 🏗️ Estrutura do Projeto
+### 2. Configuração de Download
+
+- **Pasta de Destino**: Clique em "Selecionar" para escolher onde salvar
+- **Formato**: Escolha a qualidade/formato desejado
+- **Apenas Áudio**: Marque para baixar só o áudio
+- **Legendas**: Marque para incluir legendas (especifique idiomas se necessário)
+
+### 3. Download
+
+- Clique em "Iniciar Download"
+- Acompanhe o progresso na seção inferior
+- Use "Cancelar" para interromper downloads em andamento
+
+## 🌐 Sites Suportados
+
+O yt-dlp suporta mais de 1000 sites, incluindo:
+
+- YouTube
+- Twitch
+- Twitter/X
+- Instagram
+- TikTok
+- Facebook
+- Vimeo
+- Dailymotion
+- E muitos outros...
+
+Para ver a lista completa: `yt-dlp --list-extractors`
+
+## ⚡ Funcionalidades Avançadas
+
+### Formatos de Áudio Suportados
+
+- MP3 (mais compatível)
+- M4A (boa qualidade)
+- WAV (sem compressão)
+- FLAC (lossless)
+
+### Legendas
+
+- Download automático de legendas disponíveis
+- Suporte a múltiplos idiomas (ex: `pt,en,es`)
+- Legendas auto-geradas quando disponíveis
+
+### Downloads Simultâneos
+
+- Execute múltiplos downloads ao mesmo tempo
+- Cada download tem seu próprio indicador de progresso
+- Cancelamento individual de downloads
+
+## 🛠️ Estrutura do Projeto
 
 ```
 yt-dlp-gui/
-├── main.js          # Processo principal do Electron
-├── preload.js       # Bridge seguro entre processos
-├── index.html       # Interface principal
-├── styles.css       # Estilos da aplicação
-├── renderer.js      # Lógica da interface
-├── package.json     # Configurações e dependências
-└── assets/          # Ícones e imagens
-    └── icon.png
+├── main.js              # Processo principal do Electron
+├── preload.js           # Bridge de segurança
+├── package.json         # Configurações e dependências
+├── src/
+│   ├── index.html       # Interface principal
+│   ├── renderer.js      # Lógica da interface
+│   └── styles.css       # Estilos customizados (opcional)
+└── assets/
+    └── icons/           # Ícones da aplicação
 ```
 
-## 🔧 Configuração do Build
-
-O arquivo `package.json` já está configurado para gerar executáveis. Para personalizar:
-
-- **Ícone**: Substitua `assets/icon.ico` (Windows) ou `assets/icon.png`
-- **Nome da aplicação**: Modifique `productName` em `package.json`
-- **Configurações do instalador**: Ajuste a seção `build` em `package.json`
-
-## 🎨 Personalização
-
-### Modificar cores e tema
-
-Edite o arquivo `styles.css` para alterar:
-
-- Gradientes de cor
-- Esquema de cores
-- Animações
-- Layout responsivo
-
-### Adicionar funcionalidades
-
-1. **Backend**: Modifique `main.js` para adicionar novos IPCs
-2. **Frontend**: Atualize `renderer.js` para nova lógica
-3. **Interface**: Modifique `index.html` e `styles.css`
-
-## 🐛 Solução de Problemas
+## 🐛 Resolução de Problemas
 
 ### yt-dlp não encontrado
 
-- Certifique-se de que o yt-dlp está instalado
-- Verifique se está no PATH do sistema
-- Reinicie a aplicação após instalar
+```bash
+# Verifique se está no PATH
+yt-dlp --version
 
-### Erro de download
+# Se não funcionar, reinstale:
+pip install --upgrade yt-dlp
+```
 
-- Verifique a conexão com a internet
-- Teste a URL em um navegador
-- Alguns vídeos podem ter restrições
+### Erro de permissão no Windows
 
-### Performance lenta
+Execute o terminal como Administrador ou adicione o yt-dlp ao PATH manualmente.
 
-- Verifique se o FFmpeg está instalado
-- Use uma pasta de destino no SSD
-- Feche outros programas pesados
+### Erro de dependências
 
-## 📱 Plataformas Suportadas
+```bash
+# Limpe o cache e reinstale
+rm -rf node_modules package-lock.json
+npm install
+```
 
-| Plataforma | Status         | Formato   |
-| ---------- | -------------- | --------- |
-| Windows    | ✅ Testado     | .exe      |
-| macOS      | ⚠️ Não testado | .dmg      |
-| Linux      | ⚠️ Não testado | .AppImage |
+### FFmpeg não encontrado
 
-## 🤝 Contribuindo
+Instale o FFmpeg para melhor suporte a formatos de vídeo e conversões.
+
+## 🔒 Segurança
+
+- A aplicação não coleta nem envia dados pessoais
+- Todas as operações são realizadas localmente
+- Os downloads são salvos apenas na pasta escolhida pelo usuário
+
+## 🤝 Contribuição
 
 1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
 5. Abra um Pull Request
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ## 🙏 Agradecimentos
 
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Ferramenta principal de download
-- [Electron](https://www.electronjs.org/) - Framework para aplicações desktop
-- [Font Awesome](https://fontawesome.com/) - Ícones da interface
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - A ferramenta de download que torna tudo possível
+- [Electron](https://electronjs.org/) - Framework para aplicações desktop
+- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS para interface moderna
+- [Font Awesome](https://fontawesome.com/) - Ícones utilizados na interface
 
 ## 📞 Suporte
 
 Se encontrar problemas ou tiver sugestões:
 
-1. Abra uma [Issue](https://github.com/seu-usuario/yt-dlp-gui/issues)
-2. Descreva o problema detalhadamente
-3. Inclua informações do sistema operacional
-4. Anexe logs se disponível
+1. Verifique os [Issues](https://github.com/seuusuario/yt-dlp-gui/issues) existentes
+2. Crie um novo Issue se necessário
+3. Forneça detalhes sobre seu sistema operacional e versão do Node.js
 
 ---
 
-**Nota**: Esta aplicação é apenas uma interface para o yt-dlp. Respeite os termos de uso das plataformas de vídeo e as leis de direitos autorais do seu país.
-"# ytdlp-app" 
+**Desenvolvido com ❤️ usando Electron + Tailwind CSS**

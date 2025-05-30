@@ -1,34 +1,40 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 
 let mainWindow;
+let downloadProcesses = new Map();
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 800,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, "preload.js"),
     },
-    icon: path.join(__dirname, "assets/icon.png"),
-    title: "YT-DLP GUI",
+    icon: path.join(__dirname, "assets/icons/icon.png"),
+    titleBarStyle: "default",
     show: false,
   });
 
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile("src/index.html");
 
+  // Mostrar janela quando pronta
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
   });
 
-  // Abrir DevTools em desenvolvimento
-  if (process.env.NODE_ENV === "development") {
-    mainWindow.webContents.openDevTools();
-  }
+  // Abrir links externos no navegador
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
 }
 
 app.whenReady().then(createWindow);
@@ -46,90 +52,34 @@ app.on("activate", () => {
 });
 
 // IPC Handlers
-ipcMain.handle("select-folder", async () => {
-  const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory"],
-  });
-  return result.filePaths[0];
-});
-
-ipcMain.handle("check-ytdlp", async () => {
+ipcMain.handle("check-yt-dlp", async () => {
   return new Promise((resolve) => {
-    const ytdlp = spawn("yt-dlp", ["--version"]);
-
-    ytdlp.on("close", (code) => {
+    const child = spawn("yt-dlp", ["--version"]);
+    child.on("close", (code) => {
       resolve(code === 0);
     });
-
-    ytdlp.on("error", () => {
+    child.on("error", () => {
       resolve(false);
-    });
-  });
-});
-
-ipcMain.handle("download-video", async (event, options) => {
-  return new Promise((resolve, reject) => {
-    const { url, outputPath, format, quality } = options;
-
-    let args = [url];
-
-    // Adicionar argumentos baseados nas opções
-    if (outputPath) {
-      args.push("-o", path.join(outputPath, "%(title)s.%(ext)s"));
-    }
-
-    if (format === "audio") {
-      args.push("-x", "--audio-format", "mp3");
-    } else if (quality && quality !== "best") {
-      args.push("-f", `best[height<=${quality}]`);
-    }
-
-    const ytdlp = spawn("yt-dlp", args);
-
-    let output = "";
-    let error = "";
-
-    ytdlp.stdout.on("data", (data) => {
-      output += data.toString();
-      // Enviar progresso em tempo real
-      event.sender.send("download-progress", data.toString());
-    });
-
-    ytdlp.stderr.on("data", (data) => {
-      error += data.toString();
-      event.sender.send("download-progress", data.toString());
-    });
-
-    ytdlp.on("close", (code) => {
-      if (code === 0) {
-        resolve({ success: true, output });
-      } else {
-        reject({ success: false, error });
-      }
-    });
-
-    ytdlp.on("error", (err) => {
-      reject({ success: false, error: err.message });
     });
   });
 });
 
 ipcMain.handle("get-video-info", async (event, url) => {
   return new Promise((resolve, reject) => {
-    const ytdlp = spawn("yt-dlp", ["--dump-json", url]);
+    const child = spawn("yt-dlp", ["--dump-json", "--no-playlist", url]);
 
     let output = "";
     let error = "";
 
-    ytdlp.stdout.on("data", (data) => {
+    child.stdout.on("data", (data) => {
       output += data.toString();
     });
 
-    ytdlp.stderr.on("data", (data) => {
+    child.stderr.on("data", (data) => {
       error += data.toString();
     });
 
-    ytdlp.on("close", (code) => {
+    child.on("close", (code) => {
       if (code === 0) {
         try {
           const info = JSON.parse(output);
@@ -137,21 +87,109 @@ ipcMain.handle("get-video-info", async (event, url) => {
             title: info.title,
             duration: info.duration,
             uploader: info.uploader,
-            view_count: info.view_count,
             thumbnail: info.thumbnail,
-            formats: info.formats?.map((f) => ({
-              format_id: f.format_id,
-              ext: f.ext,
-              resolution: f.resolution,
-              filesize: f.filesize,
-            })),
+            formats:
+              info.formats?.map((f) => ({
+                format_id: f.format_id,
+                ext: f.ext,
+                quality: f.format_note || f.quality || "unknown",
+                filesize: f.filesize,
+                vcodec: f.vcodec,
+                acodec: f.acodec,
+              })) || [],
           });
         } catch (e) {
-          reject({ error: "Erro ao processar informações do vídeo" });
+          reject(new Error("Erro ao analisar informações do vídeo"));
         }
       } else {
-        reject({ error });
+        reject(new Error(error || "Erro ao obter informações do vídeo"));
       }
     });
+
+    child.on("error", (err) => {
+      reject(err);
+    });
   });
+});
+
+ipcMain.handle("select-download-folder", async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory"],
+  });
+
+  if (!result.canceled) {
+    return result.filePaths[0];
+  }
+  return null;
+});
+
+ipcMain.handle("start-download", async (event, options) => {
+  const downloadId = `download_${Date.now()}`;
+
+  const args = [
+    options.url,
+    "-o",
+    path.join(options.outputPath, "%(title)s.%(ext)s"),
+    "--newline",
+  ];
+
+  if (options.format) {
+    args.push("-f", options.format);
+  }
+
+  if (options.audioOnly) {
+    args.push("-x", "--audio-format", options.audioFormat || "mp3");
+  }
+
+  if (options.subtitles) {
+    args.push(
+      "--write-subs",
+      "--write-auto-subs",
+      "--sub-lang",
+      options.subtitleLang || "pt,en"
+    );
+  }
+
+  const child = spawn("yt-dlp", args);
+  downloadProcesses.set(downloadId, child);
+
+  child.stdout.on("data", (data) => {
+    const output = data.toString();
+    mainWindow.webContents.send("download-progress", {
+      id: downloadId,
+      output: output,
+    });
+  });
+
+  child.stderr.on("data", (data) => {
+    const error = data.toString();
+    mainWindow.webContents.send("download-error", {
+      id: downloadId,
+      error: error,
+    });
+  });
+
+  child.on("close", (code) => {
+    downloadProcesses.delete(downloadId);
+    mainWindow.webContents.send("download-complete", {
+      id: downloadId,
+      success: code === 0,
+    });
+  });
+
+  return downloadId;
+});
+
+ipcMain.handle("cancel-download", async (event, downloadId) => {
+  const process = downloadProcesses.get(downloadId);
+  if (process) {
+    process.kill();
+    downloadProcesses.delete(downloadId);
+    return true;
+  }
+  return false;
+});
+
+ipcMain.handle("get-default-download-path", () => {
+  return path.join(os.homedir(), "Downloads");
 });

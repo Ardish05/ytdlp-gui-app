@@ -1,28 +1,15 @@
 {
   "name": "yt-dlp-gui",
   "version": "1.0.0",
-  "description": "Interface gráfica para yt-dlp",
+  "description": "Interface gráfica moderna para yt-dlp",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "dev": "electron . --dev",
     "build": "electron-builder",
     "build-win": "electron-builder --win",
-    "dev": "electron . --enable-logging"
-  },
-  "keywords": [
-    "youtube",
-    "download",
-    "yt-dlp",
-    "electron"
-  ],
-  "author": "zerobertoo",
-  "license": "MIT",
-  "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
-  },
-  "dependencies": {
-    "child_process": "^1.0.2"
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux"
   },
   "build": {
     "appId": "com.yourname.yt-dlp-gui",
@@ -31,17 +18,39 @@
       "output": "dist"
     },
     "files": [
-      "**/*",
-      "!node_modules/**/*",
-      "node_modules/electron/**/*"
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/icons/icon.ico"
     },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icons/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icons/icon.png"
     }
-  }
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "node-pty": "^1.0.0"
+  },
+  "keywords": [
+    "yt-dlp",
+    "youtube",
+    "downloader",
+    "electron",
+    "gui"
+  ],
+  "author": "zerobertoo",
+  "license": "MIT"
 }

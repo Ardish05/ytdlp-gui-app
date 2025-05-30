@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YT-DLP GUI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#eff6ff",
+                500: "#3b82f6",
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-50 font-sans antialiased">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-download text-primary-500 text-2xl"></i>
+            <h1 class="text-2xl font-bold text-gray-900">YT-DLP GUI</h1>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div id="status-indicator" class="flex items-center space-x-2">
+              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+              <span class="text-sm text-gray-600">Verificando yt-dlp...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 max-w-4xl">
+      <!-- URL Input Section -->
+      <div
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8"
+      >
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-link text-primary-500 mr-2"></i>
+          URL do Vídeo
+        </h2>
+        <div class="flex space-x-3">
+          <input
+            type="url"
+            id="url-input"
+            placeholder="Cole aqui a URL do YouTube, Twitch, ou qualquer site suportado..."
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
+          />
+          <button
+            id="analyze-btn"
+            class="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <i class="fas fa-search"></i>
+            <span>Analisar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Info Section -->
+      <div
+        id="video-info"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 hidden"
+      >
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-info-circle text-primary-500 mr-2"></i>
+          Informações do Vídeo
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="md:col-span-2">
+            <h3
+              id="video-title"
+              class="text-xl font-medium text-gray-900 mb-2"
+            ></h3>
+            <p class="text-gray-600 mb-4">
+              <i class="fas fa-user mr-1"></i>
+              <span id="video-uploader"></span>
+              <span class="mx-2">•</span>
+              <i class="fas fa-clock mr-1"></i>
+              <span id="video-duration"></span>
+            </p>
+          </div>
+          <div class="flex justify-center">
+            <img
+              id="video-thumbnail"
+              class="w-full max-w-xs rounded-lg shadow-sm"
+              alt="Thumbnail"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Download Options -->
+      <div
+        id="download-options"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8 hidden"
+      >
+        <h2 class="text-lg font-semibold text-gray-900 mb-6">
+          <i class="fas fa-cog text-primary-500 mr-2"></i>
+          Opções de Download
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Download Path -->
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Pasta de Destino</label
+            >
+            <div class="flex space-x-3">
+              <input
+                type="text"
+                id="output-path"
+                readonly
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+              />
+              <button
+                id="select-folder-btn"
+                class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200"
+              >
+                <i class="fas fa-folder-open mr-1"></i>
+                Selecionar
+              </button>
+            </div>
+          </div>
+
+          <!-- Format Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Formato</label
+            >
+            <select
+              id="format-select"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            >
+              <option value="">Melhor qualidade disponível</option>
+            </select>
+          </div>
+
+          <!-- Audio Only -->
+          <div>
+            <label class="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                id="audio-only"
+                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span class="text-sm font-medium text-gray-700"
+                >Apenas áudio</span
+              >
+            </label>
+            <div id="audio-format-container" class="mt-2 hidden">
+              <select
+                id="audio-format"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="mp3">MP3</option>
+                <option value="m4a">M4A</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Subtitles -->
+          <div>
+            <label class="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                id="subtitles"
+                class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span class="text-sm font-medium text-gray-700"
+                >Baixar legendas</span
+              >
+            </label>
+            <div id="subtitle-lang-container" class="mt-2 hidden">
+              <input
+                type="text"
+                id="subtitle-lang"
+                placeholder="pt,en"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Download Button -->
+        <div class="mt-6 flex justify-center">
+          <button
+            id="download-btn"
+            class="px-8 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 flex items-center space-x-2 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <i class="fas fa-download"></i>
+            <span>Iniciar Download</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Download Progress -->
+      <div
+        id="download-progress"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden"
+      >
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-download text-primary-500 mr-2"></i>
+          Progresso do Download
+        </h2>
+        <div id="downloads-container">
+          <!-- Download items will be inserted here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Loading Modal -->
+    <div
+      id="loading-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-lg p-6 m-4 max-w-sm w-full text-center">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"
+        ></div>
+        <p class="text-gray-700">Analisando vídeo...</p>
+      </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div
+      id="error-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-lg p-6 m-4 max-w-md w-full">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-exclamation-triangle text-red-500 text-xl mr-3"></i>
+          <h3 class="text-lg font-semibold text-gray-900">Erro</h3>
+        </div>
+        <p id="error-message" class="text-gray-700 mb-4"></p>
+        <div class="flex justify-end">
+          <button
+            id="close-error-btn"
+            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
