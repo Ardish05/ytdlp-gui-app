@@ -2,7 +2,7 @@
 
 Uma interface gráfica moderna e intuitiva para o yt-dlp, construída com Electron e Tailwind CSS.
 
-![YT-DLP GUI Screenshot](https://via.placeholder.com/800x500/3b82f6/ffffff?text=YT-DLP+GUI)
+![YT-DLP GUI Screenshot](https://placehold.co/800x500/3b82f6/ffffff?text=YT-DLP+GUI)
 
 ## ✨ Características
 
