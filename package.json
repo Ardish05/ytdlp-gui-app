@@ -37,13 +37,6 @@
       "icon": "assets/icons/icon.png"
     }
   },
-  "devDependencies": {
-    "electron": "^27.0.0",
-    "electron-builder": "^24.6.4"
-  },
-  "dependencies": {
-    "node-pty": "^1.0.0"
-  },
   "keywords": [
     "yt-dlp",
     "youtube",
@@ -52,5 +45,12 @@
     "gui"
   ],
   "author": "zerobertoo",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^36.3.2",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "node-gyp": "^11.2.0"
+  }
 }
